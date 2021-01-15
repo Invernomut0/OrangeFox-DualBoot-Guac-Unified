@@ -511,17 +511,18 @@ for slot_select in active inactive; do
 
     # Un/Install Magisk, patch verity otherwise since we're likely modifying system
     if $magisk; then
-      ui_print " "
-        ui_print "- Checking Environment..."
-        if [ -f "/system/etc/init/hw/init.rc" ]; then
-          ui_print "- Android 11 found: using Magisk 20.4 (20422-debug)..."
-        cp -rf $tmp/magiskcommon_a11/* $tmp/magiskcommon/
-        cp -rf $tmp/tools_a11/* $tmp/tools/
-        else
-          ui_print "- Android 10 found: using Magisk 20.4..."
-        cp -rf $tmp/magiskcommon_a10/* $tmp/magiskcommon/
-        cp -rf $tmp/tools_a10/* $tmp/tools/
-        fi
+      #ui_print " "
+      #  ui_print "- Checking Environment..."
+      #  if [ -f "/system/etc/init/hw/init.rc" ]; then
+      #    ui_print "- Android 11 found: using Magisk 20.4 (20422-debug)..."
+      #  cp -rf $tmp/magiskcommon_a11/* $tmp/magiskcommon/
+      #  cp -rf $tmp/tools_a11/* $tmp/tools/
+      #  else
+      #    ui_print "- Android 10 found: using Magisk 20.4..."
+      #  cp -rf $tmp/magiskcommon_a10/* $tmp/magiskcommon/
+      #  cp -rf $tmp/tools_a10/* $tmp/tools/
+      #  fi
+      ui_print "- Installing Magisk 21.2..."
       . magisk.sh
     else
       ui_print "  Patching ramdisk"

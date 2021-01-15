@@ -32,7 +32,14 @@
 # Pure bash dirname implementation
 getdir() {
   case "$1" in
-    */*) dir=${1%/*}; [ -z $dir ] && echo "/" || echo $dir ;;
+    */*)
+      dir=${1%/*}
+      if [ -z $dir ]; then
+        echo "/"
+      else
+        echo $dir
+      fi
+    ;;
     *) echo "." ;;
   esac
 }
@@ -116,11 +123,6 @@ case $((STATUS & 3)) in
     abort "! Please restore back to stock boot image"
     ;;
 esac
-
-if [ $((STATUS & 8)) -ne 0 ]; then
-  # Possibly using 2SI, export env var
-  export TWOSTAGEINIT=true
-fi
 
 ##################
 # Ramdisk Patches

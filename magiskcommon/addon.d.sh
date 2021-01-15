@@ -12,8 +12,9 @@ trampoline() {
   if [ -f $MAGISKBIN/addon.d.sh ]; then
     exec sh $MAGISKBIN/addon.d.sh "$@"
     exit $?
-  else
-    ps | grep zygote | grep -v grep >/dev/null && BOOTMODE=true || BOOTMODE=false
+  elif [ "$1" = post-restore ]; then
+    BOOTMODE=false
+    ps | grep zygote | grep -v grep >/dev/null && BOOTMODE=true
     $BOOTMODE || ps -A 2>/dev/null | grep zygote | grep -v grep >/dev/null && BOOTMODE=true
 
     if ! $BOOTMODE; then
@@ -24,15 +25,21 @@ trampoline() {
       [ -z $OUTFD ] && OUTFD=$(ps | grep -v 'grep' | grep -oE 'status_fd=[0-9]+' | cut -d= -f2)
       [ -z $OUTFD ] && OUTFD=$(ps -Af | grep -v 'grep' | grep -oE 'status_fd=[0-9]+' | cut -d= -f2)
     fi
-    ui_print() { $BOOTMODE && log -t Magisk -- "$1" || echo -e "ui_print $1\nui_print" >> /proc/self/fd/$OUTFD; }
+    ui_print() {
+      if $BOOTMODE; then
+        log -t Magisk -- "$1"
+      else
+        echo -e "ui_print $1\nui_print" >> /proc/self/fd/$OUTFD
+      fi
+    }
 
     ui_print "***********************"
     ui_print " Magisk addon.d failed"
     ui_print "***********************"
     ui_print "! Cannot find Magisk binaries - was data wiped or not decrypted?"
     ui_print "! Reflash OTA from decrypted recovery or reflash Magisk"
-    exit 1
   fi
+  exit 1
 }
 
 # Always use the script in /data
@@ -70,6 +77,7 @@ main() {
   fi
 
   # Ensure we aren't in /tmp/addon.d anymore (since it's been deleted by addon.d)
+  mkdir -p $TMPDIR
   cd $TMPDIR
 
   $BOOTMODE || recovery_actions
@@ -87,7 +95,12 @@ main() {
 
   if $backuptool_ab; then
     # Swap the slot for addon.d-v2
-    if [ ! -z $SLOT ]; then [ $SLOT = _a ] && SLOT=_b || SLOT=_a; fi
+    if [ ! -z $SLOT ]; then
+      case $SLOT in
+        _a) SLOT=_b;;
+        _b) SLOT=_a;;
+      esac
+    fi
   fi
 
   find_boot_image
@@ -127,7 +140,8 @@ case "$1" in
   post-restore)
     initialize
     if $backuptool_ab; then
-      $BOOTMODE && su=su || su=sh
+      su=sh
+      $BOOTMODE && su=su
       exec $su -c "sh $0 addond-v2"
     else
       # Run in background, hack for addon.d-v1
