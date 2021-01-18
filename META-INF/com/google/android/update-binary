@@ -522,7 +522,7 @@ for slot_select in active inactive; do
       #  cp -rf $tmp/magiskcommon_a10/* $tmp/magiskcommon/
       #  cp -rf $tmp/tools_a10/* $tmp/tools/
       #  fi
-      ui_print "- Installing Magisk 21.2..."
+      ui_print "- Running Magisk Script"
       . magisk.sh
     else
       ui_print "  Patching ramdisk"
