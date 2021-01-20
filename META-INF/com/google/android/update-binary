@@ -395,6 +395,13 @@ for slot_select in active inactive; do
   export KEEPFORCEENCRYPT=$(eval echo "\$fec$(echo $slot | cut -d _ -f2)")
   
   # Install twrp
+  #if [ "$slot_select" == "inactive" ]; then
+  #  ui_print "- Installing NEW Orangefox on $slot_select slot"
+  #  cp -f $tmp/ofox_test/ramdisk-recovery.cpio.new $tmp/ramdisk-recovery.cpio
+  #else
+  #  ui_print "- Installing OLD Orangefox on $slot_select slot"
+  #  cp -f $tmp/ofox_test/ramdisk-recovery.cpio.orig $tmp/ramdisk-recovery.cpio
+  #fi
   cp -f $tmp/ramdisk-recovery.cpio ramdisk.cpio
   if [ "$type" == "f2fs" ]; then
     cp -f $tmp/twrp.fstab twrp.fstab
