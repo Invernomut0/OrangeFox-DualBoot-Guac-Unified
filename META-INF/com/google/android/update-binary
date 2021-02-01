@@ -429,6 +429,7 @@ for slot_select in active inactive; do
       [ "$layout" == "stock" ] && mount -t $type "/dev/block/bootdevice/by-name/userdata" /data || { mount -t $type "/dev/block/bootdevice/by-name/userdata$slot" /data || mountdata=false; }
     fi
 
+
     
     if ! $KEEPVERITY; then
       if [ -f "/system/etc/init/hw/init.rc" ]; then
@@ -515,20 +516,8 @@ for slot_select in active inactive; do
       FSTABS="$(find /system_root /vendor/etc /odm/etc -maxdepth 1 -type f -name "fstab.qcom" | sed 's|^./|/|')"
       [ "$FSTABS" ] && patch_fstabs
     fi
-
     # Un/Install Magisk, patch verity otherwise since we're likely modifying system
     if $magisk; then
-      #ui_print " "
-      #  ui_print "- Checking Environment..."
-      #  if [ -f "/system/etc/init/hw/init.rc" ]; then
-      #    ui_print "- Android 11 found: using Magisk 20.4 (20422-debug)..."
-      #  cp -rf $tmp/magiskcommon_a11/* $tmp/magiskcommon/
-      #  cp -rf $tmp/tools_a11/* $tmp/tools/
-      #  else
-      #    ui_print "- Android 10 found: using Magisk 20.4..."
-      #  cp -rf $tmp/magiskcommon_a10/* $tmp/magiskcommon/
-      #  cp -rf $tmp/tools_a10/* $tmp/tools/
-      #  fi
       ui_print "- Running Magisk Script"
       . magisk.sh
     else
@@ -558,7 +547,19 @@ for slot_select in active inactive; do
   magiskboot repack boot.img new-boot.img
   cat new-boot.img /dev/zero > $target$slot 2>/dev/null || true
   magiskboot cleanup
-  
+  ################## DBC
+  ui_print "- Dual Boot Companion"
+  ui_print "  Copy bootctl to /data/adb/Dualboot"
+  mkdir -pv /data/adb/DualBoot
+  cp -af $tools/bootctl /data/adb/DualBoot/
+  set_perm /data/adb/Dualboot/bootctl 0 0 0755 u:object_r:shell_exec:s0
+  ui_print "  Install DualBooCompanion app"
+  rm -rf /system/app/DualBootCompanion/
+  mkdir -pv /system/app/DualBootCompanion
+  set_perm /system/app/DualBootCompanion.apk 0 0 0755 u:object_r:system_file:s0
+  cp -af $tmp/data/app/DualBootCompanion.apk /system/app/DualBootCompanion/
+  set_perm /system/app/DualBootCompanion/DualBootCompanion.apk 0 0 0644 u:object_r:system_file:s0
+  ######################
   cd $tmp
   rm -rf boot
 
@@ -577,7 +578,6 @@ mount /data
 cd $tmp
 echo -e "$(date +"%Y-%m-%d %H:%M:%S.%3N") - Dual boot script end." >> $LOGFILE 2>&1
 //Create module directory
-mkdir -pv /data/adb/DualBoot
 ui_print "- Copy logfile to /data/adb/DualBoot/" 
 cp -af $LOGFILE /data/adb/modules/DualBoot/$LOGFILENAME
 rm -rf /dev/tmp
