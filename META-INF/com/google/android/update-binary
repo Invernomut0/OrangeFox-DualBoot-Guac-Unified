@@ -553,7 +553,7 @@ for slot_select in active inactive; do
   mkdir -pv /data/adb/DualBoot
   cp -af $tools/bootctl /data/adb/DualBoot/
   set_perm /data/adb/Dualboot/bootctl 0 0 0755 u:object_r:shell_exec:s0
-  ui_print "  Install DualBooCompanion app"
+  ui_print "  Installing DualBootCompanion app"
   rm -rf /system/app/DualBootCompanion/
   mkdir -pv /system/app/DualBootCompanion
   set_perm /system/app/DualBootCompanion.apk 0 0 0755 u:object_r:system_file:s0
