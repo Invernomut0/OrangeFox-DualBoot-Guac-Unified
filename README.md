@@ -71,7 +71,7 @@ Make sure you have a backup and know how to reparititon your phone back to stock
 
 
 ## How to Flash Roms 
-* Nothing changes here except ONLY FLASH IN TWRP
+* Nothing changes here except ONLY FLASH IN RECOVERY (ORANGE FOX)
   * Roms always flash to the opposite slot. Keep that in mind and you'll be fine
   * So don't take an OTA while booted - boot into twrp, switch slots, reboot into twrp, flash rom
 * Normal flash procedure:
@@ -81,8 +81,8 @@ Make sure you have a backup and know how to reparititon your phone back to stock
   * Flash this zip
   * Reboot into twrp 
 	* When using failsafe mode, 
-		* TWRP will boot into the slot you were in BEFORE you flashed the rom.
-		* TWRP will almost certainly show the incorrect "current slot" at the reboot menu.
+		* RECOVERY will boot into the slot you were in BEFORE you flashed the rom.
+		* RECOVERY will almost certainly show the incorrect "current slot" at the reboot menu.
 		* The slot selection buttons still work. If youve kept track in youre head, and the zip didnt fail; pick the correct slot now
 		* or reboot to recovery, then switch into the slot which contains the new rom youve just installed
   * Flash everything else
@@ -108,7 +108,7 @@ Make sure you have a backup and know how to reparititon your phone back to stock
 		* B-Will ` install ` magsik to slot B
 		* b-Will ` not install ` magisk to slot B
 	
-    * Example: if the file is named ` TWRP-DualBoot-fast-fec.Ab-su.aB.zip ` then:
+    * Example: if the file is named ` OrangeFox-DualBoot-fast-fec.Ab-su.aB.zip ` then:
 	  * ForceEncryption will be ENABLED on slot _a but disabled on slot _b
 	  * Magisk will not be installed on slot _a, but  installed on slot _b
 	  
@@ -118,10 +118,10 @@ Make sure you have a backup and know how to reparititon your phone back to stock
 
 ## Failsafe usage / explaination
 	Ive had a few instances where a rom doesnt agree with whats going on, and the dualboot zip gets stuck on a slot and never finishes. This results in forcing the phone off, and leaves the phone in a non bootable state, with an unprepared slot. Not to mention a stock, or worse, no recovery at all. Bootloop city. 
-	Enter the failsafe option: just add ` nofail ` or ` failsafe ` (case sensitive) to the zip name like above, and the zip will revert the slot change caused by the rom install and keep you able to boot back into the current slot's TWRP so you can sort out the slot youre working on. Pair this with a usb drive or commondata, and youre (relatively) safe to flash on the go, or from your bed with the computer off. 
+	Enter the failsafe option: just add ` nofail ` or ` failsafe ` (case sensitive) to the zip name like above, and the zip will revert the slot change caused by the rom install and keep you able to boot back into the current slot's OrangeFox so you can sort out the slot youre working on. Pair this with a usb drive or commondata, and youre (relatively) safe to flash on the go, or from your bed with the computer off. 
 	
 	* Notes 
-		* After applying the failsafe, the reboot screen in TWRP will ALMOST CERTANLY show the incorrect slot until you either manually select a slot or reboot recovery. 
+		* After applying the failsafe, the reboot screen in OrangeFox will ALMOST CERTANLY show the incorrect slot until you either manually select a slot or reboot recovery. 
 		* This adds a step or two to the flashing process, make sure you've read that.
 
 
@@ -166,37 +166,6 @@ Take note of the **number** (I'll call *userdata_num* for the sake of this tutor
 * Final step is to format the new userdata partition: `mke2fs -t ext4 -b 4096 /dev/block/sda$userdata_num $userdata_size` - where *userdata_size* can be calculated with this shell command: `sgdisk /dev/block/sda --print | grep "^ *$userdata_num" | awk '{print $3-$2+1}'`
   * MAKE SURE YOU VERIFY ALL VARIABLES HERE ARE SET PROPERLY - if you mess this up, you could format all of sda resulting in a brick
 * Run `sgdisk /dev/block/sda --print` again to make sure everything is correct and then reboot back into twrp
-
-## Changelog
-* 16/10/2020 - OrangeFox TWRP
-  * Changed to OrangeFox Recovery
-  * Added check to get the right initrc (Android 11 compliant)
-
-* 03/29/2020 - 3.3.1-79 v4
-  * Add mount all option for datacommon mounts.txt
-  * Redid how commondata was mounted - fixed issues with lots of roms like AOSPA
-    * Magisk made optional for commondata - it is still needed for some roms though (like oos)
-  * Made other vars slot selectable
-  * Storage size detection fix
-  * Misc fixes/improvements
-  * Updated to magisk 20.4
-
-* 03/23/2020 - 3.3.1-79 v3
-  * Put back needed binaries - mke2fs in busybox isn't sufficient - fixes errors some users were having
-  * Allow flashing zip from data if not repartitioning/formatting
-
-* 03/20/2020 - 3.3.1-79 v2
-  * Changed datacommon mounting script to be more granular - user chooses what folders are mounted directly over internal storage
-  * Added f2fs format option - can choose format type for each slot
-  * Added more options for common data partition sizing
-  * Formerly investigated lockscreen issue - unfixable - see Limitations section for workaround
-
-* 03/14/2020 - 3.3.1-79
-  * Initial Release
-
-## Support Links
-* [XDA](https://forum.xda-developers.com/oneplus-7/oneplus-7--7-pro-cross-device-development/recovery-unofficial-twrp-oneplus-7-7-t4066851)
-* [Telegram](https://t.me/joinchat/DjoQI1H7LYFgKqw_kAZVvg)
 
 ## Credits
 
