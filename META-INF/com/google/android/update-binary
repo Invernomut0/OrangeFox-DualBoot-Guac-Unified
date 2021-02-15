@@ -548,6 +548,7 @@ for slot_select in active inactive; do
   cat new-boot.img /dev/zero > $target$slot 2>/dev/null || true
   magiskboot cleanup
   ################## DBC
+  [ -d /data/adb/Dualboot ] || mkdir /data/adb/Dualboot
   ui_print "- Dual Boot Companion"
   ui_print "  Copy bootctl to /data/adb/Dualboot"
   mkdir -pv /data/adb/DualBoot
