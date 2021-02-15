@@ -550,10 +550,10 @@ for slot_select in active inactive; do
   ################## DBC
   [ -d /data/adb/Dualboot ] || mkdir /data/adb/Dualboot
   ui_print "- Dual Boot Companion"
-  ui_print "  Copy bootctl to /data/adb/Dualboot"
-  mkdir -pv /data/adb/DualBoot
-  cp -af $tools/bootctl /data/adb/DualBoot/
-  set_perm /data/adb/Dualboot/bootctl 0 0 0755 u:object_r:shell_exec:s0
+  #ui_print "  Copy bootctl to /data/adb/Dualboot"
+  #mkdir -pv /data/adb/DualBoot
+  #cp -af $tools/bootctl /data/adb/DualBoot/
+  #set_perm /data/adb/Dualboot/bootctl 0 0 0755 u:object_r:shell_exec:s0
   ui_print "  Installing DualBootCompanion app"
   rm -rf /system/app/DualBootCompanion/
   mkdir -pv /system/app/DualBootCompanion
