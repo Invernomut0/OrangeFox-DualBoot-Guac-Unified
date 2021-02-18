@@ -32,8 +32,12 @@ else
     mount_dir "$i"
   done < /datacommon/mounts.txt
 fi
-# mount whatsapp common folder if exists /datacommon/WhatsData directory
-#if [ -d /datacommon/WhatsData ]; then
-#  mount --bind /datacommon/WhatsData /mnt/runtime/write/emulated/0/WhatsApp
-#fi
+#SAHREDAPP SECTION
+if [ -d /datacommon/SharedData ]; then
+  [-f /datacommon/SharedData/datamount.conf ] || exit 0
+     while IFS="" read -r i || [ -n "$i" ]; do
+      mount -o bind "$i"
+     done < /datacommon/SharedData/datamount.conf 
+fi
+#END SHAREDAPP
 exit 0
