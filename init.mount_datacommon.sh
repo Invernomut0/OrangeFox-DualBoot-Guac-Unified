@@ -10,7 +10,7 @@ mount_dir(){
 mount -t <type> -o <flags> /dev/block/by-name/userdata2 /datacommon
 touch /datacommon/.nomedia
 chown -R 1023:1023 /datacommon
-chcon -R u:object_r:media_rw_data_file:s0 /datacommon
+#chcon -R u:object_r:media_rw_data_file:s0 /datacommon
 until [ -d /storage/emulated/0/Android ]; do
   sleep 1
 done
@@ -34,10 +34,37 @@ else
 fi
 #SAHREDAPP SECTION
 if [ -d /datacommon/SharedData ]; then
-  [-f /datacommon/SharedData/datamount.conf ] || exit 0
-     while IFS="" read -r i || [ -n "$i" ]; do
-      mount -o bind "$i"
-     done < /datacommon/SharedData/datamount.conf 
+  if [ -f /datacommon/SharedData/datamount.conf ]; then
+    setenforce 0
+    while IFS="" read -r i || [ -n "$i" ]; do
+      mount -o bind $i
+      stringarray=($i)
+      restorecon -R ${stringarray[1]}
+      done < /datacommon/SharedData/datamount.conf
+    chmod -R 777 /datacommon/SharedData/*
+  fi
+else
+  chcon -R u:object_r:media_rw_data_file:s0 /datacommon
 fi
 #END SHAREDAPP
+
+#INACTIVE SLOT MOUNT
+if [ -d /datacommon/SharedData ]; then
+    if [ -f /datacommon/SharedData/mInactive.conf ]; then
+      SLOT=$(/data/adb/Dualboot/bootctl get-current-slot)
+		  SUFFIX=$(/data/adb/Dualboot/bootctl get-suffix $SLOT)
+		  [[ "$SUFFIX" == "_a" ]] && INACTIVE="b" || INACTIVE="a"
+		  DATA_BLKID=$(blkid /dev/block/by-name/userdata_$INACTIVE)
+		  [[ "$DATA_BLKID" == *"ext4"* ]] && FSDATA="ext4" || FSDATA="f2fs"
+    	while IFS="" read -r i || [ -n "$i" ]; do
+      	if [[ $i == *"system"* ]]; then
+       	  mount -t $FSDATA /dev/block/by-name/userdata_$INACTIVE /datacommon/DualBoot/InactiveData
+      	fi
+      	if [[ $i == *"data"* ]]; then
+       	  mount -t ext4 /dev/block/by-name/system_$INACTIVE /datacommon/DualBoot/InactiveSystem
+      	fi	
+    	done < /datacommon/SharedData/mInactive.conf
+    fi
+fi
+#END INACTIVE SLOT MOUNT
 exit 0
