@@ -10,7 +10,14 @@ mount_dir(){
 mount -t <type> -o <flags> /dev/block/by-name/userdata2 /datacommon
 touch /datacommon/.nomedia
 chown -R 1023:1023 /datacommon
-#chcon -R u:object_r:media_rw_data_file:s0 /datacommon
+##SHARED DATA PATCH
+path_list=$(find /datacommon -maxdepth 1)
+for path in $path_list
+do
+  [ $path == "/datacommon" ] && chcon u:object_r:media_rw_data_file:s0 $path || (
+    [ $path != "/datacommon/SharedData" ] && chcon -R u:object_r:media_rw_data_file:s0 $path)
+done
+##SHARED DATA PATCH END
 until [ -d /storage/emulated/0/Android ]; do
   sleep 1
 done
@@ -42,9 +49,7 @@ if [ -d /datacommon/SharedData ]; then
       restorecon -R ${stringarray[1]}
       done < /datacommon/SharedData/datamount.conf
     chmod -R 777 /datacommon/SharedData/*
-  fi
-else
-  chcon -R u:object_r:media_rw_data_file:s0 /datacommon
+  fi  
 fi
 #END SHAREDAPP
 exit 0
